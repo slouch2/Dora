@@ -1,0 +1,11 @@
+
+openai
+upbit-client
+python-telegram-bot
+streamlit
+pandas
+numpy
+matplotlib
+scikit-learn
+python-dotenv
+

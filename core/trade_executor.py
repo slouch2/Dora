@@ -1,33 +1,22 @@
-# core/trade_executor.py
-
 import pyupbit
-from config import UPBIT_ACCESS_KEY, UPBIT_SECRET_KEY, TRADING_FEE_RATE, MIN_ORDER_AMOUNT, MAX_TRADE_PER_COIN
+from config import UPBIT_ACCESS_KEY, UPBIT_SECRET_KEY
 
 upbit = pyupbit.Upbit(UPBIT_ACCESS_KEY, UPBIT_SECRET_KEY)
 
-async def execute_trade(coin, decision):
-    ticker = f"KRW-{coin}"
+def market_buy(ticker, volume):
+    try:
+        result = upbit.buy_market_order(ticker, volume)
+        print(f"[매수 성공] {ticker} {volume}개 시장가 매수 완료")
+        return result
+    except Exception as e:
+        print(f"[매수 실패] {ticker}: {e}")
+        return None
 
-    if decision == "buy":
-        price = pyupbit.get_current_price(ticker)
-        volume = (MAX_TRADE_PER_COIN * (1 - TRADING_FEE_RATE)) / price
-        amount = price * volume
-
-        if amount < MIN_ORDER_AMOUNT:
-            return {"status": "fail", "reason": "Amount below minimum"}
-
-        response = upbit.buy_market_order(ticker, volume)
-        return response
-
-    elif decision == "sell":
-        balance = upbit.get_balance(ticker)
-
-        if balance > 0:
-            response = upbit.sell_market_order(ticker, balance)
-            return response
-        else:
-            return {"status": "fail", "reason": "No balance"}
-
-    else:
-        return {"status": "hold"}
-
+def market_sell(ticker, volume):
+    try:
+        result = upbit.sell_market_order(ticker, volume)
+        print(f"[매도 성공] {ticker} {volume}개 시장가 매도 완료")
+        return result
+    except Exception as e:
+        print(f"[매도 실패] {ticker}: {e}")
+        return None
